@@ -15,6 +15,7 @@ services:
       - '3022:22'
       - '3388:3389'
     #command: '/usr/bin/bash /etc/rc2.d/S02myinit'
+    shm_size: 512m
     volumes:
       #- './bin/init.sh:/opt/init.sh'
       #Maven

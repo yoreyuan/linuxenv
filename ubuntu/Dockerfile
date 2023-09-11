@@ -6,10 +6,15 @@ MAINTAINER YoreYuen
 ENV LANG='zh_CN.UTF-8' LANGUAGE='zh_CN:zh' LC_ALL='zh_CN.utf8'
 ENV TZ=Asia/Shanghai
 ENV NOTVISIBLE "in users profile"
+ENV INST_SCRIPTS=/tmp/install
+ENV HOME=/root
+ENV DISTRO=ubuntu
+
 ARG DEBIAN_FRONTEND=noninteractive
 
-WORKDIR /root/
-#COPY sources.list /etc/apt/sources.list
+### Home setup
+WORKDIR $HOME
+RUN mkdir -p $HOME/Desktop
 
 RUN set -xeu && \
     echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
@@ -18,54 +23,51 @@ RUN set -xeu && \
     sed -i "s@http://.*security.ubuntu.com@http://repo.huaweicloud.com@g" /etc/apt/sources.list && \
     apt-get -qq update
 
+ADD ./common /dockerstartup
 
-#tools
-RUN set -xeu && \
-    apt-get -y --no-install-recommends install language-pack-zh-hans language-pack-zh-hans-base \
-            gnupg ca-certificates software-properties-common locales curl tzdata \
-            less python3 vim \
-            procps net-tools inetutils-ping \
-            wget bridge-utils traceroute mtr dnsutils nano lsof telnet \
-            tcpdump lrzsz dos2unix zip unzip tree mysql-client tini jq apache2 sudo && \
-    echo "zh_CN.UTF-8 UTF-8" >> /etc/locale.gen && \
-    locale-gen zh_CN.UTF-8 && \
-    update-alternatives --install /usr/bin/python python /usr/bin/python3 1 && \
-    ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+### Install common tools
+COPY ./install/install_tools.sh $INST_SCRIPTS/install_tools.sh
+RUN DEBIAN_FRONTEND=$DEBIAN_FRONTEND bash $INST_SCRIPTS/install_tools.sh
 
+### Install openssh server
+COPY ./install/install_sshd.sh $INST_SCRIPTS/install_sshd.sh
+RUN bash $INST_SCRIPTS/install_sshd.sh
 
-# zulu jdk
-RUN set -xeu && \
-    curl -s https://repos.azul.com/azul-repo.key | gpg --dearmor -o /usr/share/keyrings/azul.gpg && \
-    echo "deb [signed-by=/usr/share/keyrings/azul.gpg] https://repos.azul.com/zulu/deb stable main" | tee /etc/apt/sources.list.d/zulu.list && \
-    echo "Package: zulu17-*\nPin: version 17.0.8-*\nPin-Priority: 1001" > /etc/apt/preferences && \
-    apt-get -qq update && \
-    # zulu17-jdk=17.0.8-*
-    apt-get -y --no-install-recommends install zulu17-jdk && \
-    apt-get -qq -y purge --auto-remove software-properties-common && \
-    # maven 3.x
-    wget https://repo.huaweicloud.com/apache/maven/maven-3/3.9.2/binaries/apache-maven-3.9.2-bin.tar.gz && \
-    tar -zxf apache-maven-3.9.2-bin.tar.gz && mv apache-maven-3.9.2 /usr/local/maven && \
-    ln -s /usr/local/maven/bin/mvn /usr/local/bin/mvn && \
-    mkdir /root/.m2 && \
-    rm -rf apache-maven-3.9.2-bin.tar.gz
+### Install JDK
+COPY ./install/install_jdk.sh $INST_SCRIPTS/install_jdk.sh
+RUN bash $INST_SCRIPTS/install_jdk.sh
 
+### Install custom fonts
+COPY ./install/install_custom_fonts.sh $INST_SCRIPTS/install_custom_fonts.sh
+RUN bash $INST_SCRIPTS/install_custom_fonts.sh
 
-# desktop
-RUN set -xeu && \
-    #apt-get -qq -y install openssh-server xrdp ubuntu-desktop && \
-    apt-get install -y openssh-server ubuntu-desktop unity compizconfig-settings-manager xrdp && \
-    sed -i 's/#PermitRootLogin .*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
-    #取消pam限制
-    sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd && \
-    #echo 123456 | passwd --stdin && \
-    echo root:123456 | chpasswd && \
-    echo "export VISIBLE=now" >> /etc/profile && \
-    rm -rf /var/lib/apt/lists/*
+### Install xfce UI
+COPY ./install/install_xfce_ui.sh $INST_SCRIPTS/install_xfce_ui.sh
+RUN bash $INST_SCRIPTS/install_xfce_ui.sh
+#ADD ./xfce/.config/ /root/.config/
+RUN mkdir -p /usr/share/extra/backgrounds/
+RUN mkdir -p /usr/share/extra/icons/
+ADD ./common/images/bg_default.png /usr/share/extra/backgrounds/bg_default.png
+ADD ./common/images/icon_ubuntu.png /usr/share/extra/icons/icon_ubuntu.png
+ADD ./common/images/icon_ubuntu.png /usr/share/extra/icons/icon_default.png
 
+### Custom Folder Emblems
+COPY ./install/install_emblems.sh $INST_SCRIPTS/install_emblems.sh
+RUN bash $INST_SCRIPTS/install_emblems.sh
+
+### Install Chrome
+COPY ./install/install_chrome.sh $INST_SCRIPTS/install_chrome.sh
+RUN bash $INST_SCRIPTS/install_chrome.sh
+
+### Install Sublime Text
+COPY ./install/install_sublime_text.sh $INST_SCRIPTS/install_sublime_text.sh
+RUN bash $INST_SCRIPTS/install_sublime_text.sh
+
+### Cleanup job
+COPY ./install/install_clean.sh $INST_SCRIPTS/install_clean.sh
+RUN bash $INST_SCRIPTS/install_clean.sh && rm -rf $INST_SCRIPTS/install_clean.sh
 
 ENV JAVA_HOME=/usr/lib/jvm/zulu17
-
-COPY --chown=root:root bin/init.sh /etc/rc2.d/S02myinit
 
 EXPOSE 22
 EXPOSE 3389
