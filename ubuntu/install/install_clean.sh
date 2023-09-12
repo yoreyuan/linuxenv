@@ -14,15 +14,6 @@ elif [[ "${DISTRO}" == @(debian|kali|parrotos5|ubuntu) ]]; then
 fi
 
 
-rm -rf $INST_SCRIPTS/install_tools.sh \
-        $INST_SCRIPTS/install_sshd.sh \
-        $INST_SCRIPTS/install_jdk.sh \
-        $INST_SCRIPTS/install_custom_fonts.sh \
-        $INST_SCRIPTS/install_xfce_ui.sh \
-        $INST_SCRIPTS/install_emblems.sh \
-        $INST_SCRIPTS/install_chrome.sh \
-        $INST_SCRIPTS/install_sublime_text.sh
-
 rm -rf /var/lib/apt/lists/* /var/tmp/*
 rm -rf /dockerstartup/images
 

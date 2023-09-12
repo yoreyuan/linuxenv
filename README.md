@@ -6,6 +6,7 @@ Docker + RDP + 远程桌面连接方式，可以在Windows系统下使用Linux�
 
 目前提供如下操作系统环境：
 * Ubuntu 22.04.3
+* Centos 7.9.2009
 
 开发环境中提供如下
 * JDK 17
@@ -17,7 +18,7 @@ Docker + RDP + 远程桌面连接方式，可以在Windows系统下使用Linux�
 进入到支持的系统的目录下，构建镜像，例如进入到 `ubuntu`。执行如下命令:
 ```bash
 cd ubuntu/
-docker build -f Dockerfile -t linuxenv:latest .
+./build.sh
 ```
 
 启动容器
@@ -36,7 +37,7 @@ ssh -p 3022 root@127.0.0.1
 用户名root对应的默认密码为123456。成功进入后可以看到熟悉的Ubuntu桌面。
 如果卡住或者黑屏、闪退，可以到用户的家目录下查看 `~/.xorgxrdp.10.log`、`~/.xsession-errors`文件信息，来定位及解决。
 
-Windows远程桌面连接优化：
+**Windows远程桌面连接优化**：
 * 显示：显示配置可以滑动到最右边，这样可以在多个显示器中都以全屏的方式显示。
 * 体验：因为是连接本地的，可以选择为`LAN (10 Mbps或更高)`，可以使得画面更加流畅。
 * 本地资源：本地设备和资源，驱动器，可以将本地磁盘在远程服务器上访问。
