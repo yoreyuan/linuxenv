@@ -68,6 +68,9 @@ RUN bash $INST_SCRIPTS/install_chrome.sh
 ### Install IDEA
 RUN bash $INST_SCRIPTS/install_idea.sh
 
+### Sublime Text
+RUN bash $INST_SCRIPTS/install_sublime_text.sh
+
 ## Cleanup job
 RUN bash $INST_SCRIPTS/centos-setup.sh
 RUN bash $INST_SCRIPTS/centos-cleanup.sh && rm -rf $INST_SCRIPTS
