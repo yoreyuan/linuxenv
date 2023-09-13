@@ -17,15 +17,17 @@ ARG DEBIAN_FRONTEND=noninteractive
 WORKDIR $HOME
 RUN mkdir -p $HOME/Desktop
 
+ADD ./common /dockerstartup
+ADD ./install $INST_SCRIPTS
+#如果下载比较慢，可以将下面两个包提前下载到当前目录下
+COPY ./idea-2023.2.1.tar ./chrome.deb /tmp/
+
 RUN set -xeu && \
     echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
     echo 'Acquire::http::Timeout "15";' > /etc/apt/apt.conf.d/80-timeouts && \
     sed -i "s@http://.*archive.ubuntu.com@http://repo.huaweicloud.com@g" /etc/apt/sources.list && \
     sed -i "s@http://.*security.ubuntu.com@http://repo.huaweicloud.com@g" /etc/apt/sources.list && \
     apt-get -qq update
-
-ADD ./common /dockerstartup
-ADD ./install $INST_SCRIPTS
 
 ### Install common tools
 RUN DEBIAN_FRONTEND=$DEBIAN_FRONTEND bash $INST_SCRIPTS/install_tools.sh

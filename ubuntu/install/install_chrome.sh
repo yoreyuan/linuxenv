@@ -39,13 +39,17 @@ elif [ "${DISTRO}" == "opensuse" ]; then
   fi
 else
   apt-get update
-  if [ ! -z "${CHROME_VERSION}" ]; then
-    wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb -O chrome.deb
-  else
-    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -O chrome.deb
+  chromeDebPath="/tmp/chrome.deb"
+  if [ ! -e "$chromeDebPath" ]; then
+    if [ ! -z "${CHROME_VERSION}" ]; then
+      wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb -O $chromeDebPath
+    else
+      wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -O $chromeDebPath
+    fi
   fi
-  apt-get install -y ./chrome.deb
-  rm chrome.deb
+
+  apt-get install -y $chromeDebPath
+  rm $chromeDebPath
   if [ -z ${SKIP_CLEAN+x} ]; then
     apt-get autoclean
   fi
