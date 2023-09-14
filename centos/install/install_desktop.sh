@@ -71,6 +71,10 @@ systemctl enable xrdp
 
 
 ##################################
+# 登录时桌面选择
+#yum install lightdm
+#systemctl enable lightdm
+
 if [ "GNOME" == "$DESKTOP_TYPE" ]; then
   #yum grouplist
   #CentOS提供了几种桌面环境，例如GNOME、KDE、Xfce等

@@ -2,12 +2,11 @@ version: '1.0'
 
 services:
   linuxenv:
-    #image: linuxenv:centos7.9.2009
-    #image: linuxenv-v1:centos7.9.2009
-    #image: linuxenv-rc2:centos7.9.2009
+    #image: linuxenv-kde:centos7.9.2009
     #image: linuxenv-gnome:centos7.9.2009
-    image: linuxenv-xfce:centos7.9.2009
-    container_name: linuxenv-centos-xfce
+    #image: linuxenv-xfce:centos7.9.2009
+    image: linuxenv:centos7.9.2009
+    container_name: linuxenv-centos
     hostname: linuxenv
     user: root
     privileged: true
