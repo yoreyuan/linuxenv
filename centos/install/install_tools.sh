@@ -3,7 +3,7 @@ set -e
 
 echo "Install some common tools for further installation"
 
-yum install -y curl git less sudo tree vim wget which
+yum install -y curl less tree vim wget which
 yum install -y bc
 #bind软件提供的一组DNS工具包，里面有一些DNS相关的工具。主要：dig，host，nslookup，nsupdate
 yum install -y bind-utils
@@ -22,6 +22,7 @@ yum install -y iotop
 yum install -y jq
 yum install -y lrzsz
 yum install -y lsof
+yum install -y make
 yum install -y mysql
 #网络测试工具
 yum install -y mtr
@@ -39,3 +40,18 @@ yum install -y traceroute
 #类似”按键精灵“的工具
 yum install -y xdotool
 yum install -y zip unzip
+
+
+### docker
+if [ "true" = "$INSTALL_DOCKER" ]; then
+  #https://docs.docker.com/engine/install/centos/#install-using-the-repository
+  yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+  yum install -y docker-ce \
+                 docker-ce-cli \
+                 containerd.io \
+                 docker-buildx-plugin \
+                 docker-compose-plugin
+
+  systemctl enable docker
+fi
+

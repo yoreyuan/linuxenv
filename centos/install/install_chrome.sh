@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -ex
 
+if [ "false" = "$INSTALL_CHROME" ]; then
+  echo "The Chrome installation will be skipped!"
+  exit 0
+fi
+
 CHROME_ARGS="--password-store=basic --no-sandbox --ignore-gpu-blocklist --user-data-dir --no-first-run --simulate-outdated-no-au='Tue, 31 Dec 2099 23:59:59 GMT'"
 CHROME_VERSION=$1
 DISTRO=centos
@@ -15,7 +20,9 @@ if [ ! -e "$HOME/.config" ]; then
   mkdir $HOME/.config
 fi
 
-chromeRpmPath="/tmp/chrome.rpm"
+echo "Start installing Chrome!"
+
+chromeRpmPath="$INST_SCRIPTS/chrome.rpm"
 if [ ! -e "$chromeRpmPath" ]; then
   if [ ! -z "${CHROME_VERSION}" ]; then
     wget https://dl.google.com/linux/chrome/rpm/stable/x86_64/google-chrome-stable-${CHROME_VERSION}.x86_64.rpm -O $chromeRpmPath
@@ -25,7 +32,6 @@ if [ ! -e "$chromeRpmPath" ]; then
 fi
 
 yum localinstall -y $chromeRpmPath
-rm $chromeRpmPath
 
 sed -i 's/-stable//g' /usr/share/applications/google-chrome.desktop
 

@@ -29,5 +29,5 @@ services:
       - "node01:172.22.80.1"
 
 networks:
-  centos_default:
+  linuxenv_default:
     driver: bridge

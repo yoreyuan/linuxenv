@@ -11,3 +11,7 @@ rm -rf /var/cache/yum
 #yum -q clean all
 #yum -y -q update
 #yum makecache
+
+if [ ! -e "/opt/rh" ]; then
+  mkdir /opt/rh
+fi

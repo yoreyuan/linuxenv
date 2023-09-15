@@ -1,8 +1,25 @@
+FROM centos:centos7.9.2009 AS buildGit
+
+MAINTAINER YoreYuen
+
+ENV INST_SCRIPTS=/tmp/install
+ADD ./install $INST_SCRIPTS
+WORKDIR $INST_SCRIPTS
+
+# 华为镜像源
+RUN set -xeu && \
+    mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.bak && \
+    #wget -O /etc/yum.repos.d/CentOS-Base.repo https://repo.huaweicloud.com/repository/conf/CentOS-7-reg.repo && \
+    mv $INST_SCRIPTS/CentOS-7-reg.repo /etc/yum.repos.d/CentOS-Base.repo && \
+    chmod 644  /etc/yum.repos.d/CentOS-Base.repo && \
+    yum clean all && yum repolist
+
+RUN bash $INST_SCRIPTS/build_git.sh
+
+
 #FROM centos:latest
 #FROM image.cestc.cn/wh-bigdata/trino-base:centos8-jdk17
 FROM centos:centos7.9.2009
-
-MAINTAINER YoreYuen
 
 ENV HOME=/root
 ENV INST_SCRIPTS=/tmp/install
@@ -11,28 +28,21 @@ ENV LANG='zh_CN.UTF-8' LANGUAGE='zh_CN:zh' LC_ALL='zh_CN.utf8'
 ENV TZ=Asia/Shanghai
 ENV JAVA_HOME=/usr/lib/jvm/zulu17
 
-
 ARG DEBIAN_FRONTEND=noninteractive
 ARG START_XFCE4=1
+ARG INSTALL_CHROME="true"
+ARG INSTALL_DOCKER=false
+ARG INSTALL_IDEA="true"
+ARG INSTALL_MAVEN="true"
+ARG INSTALL_SUBLIME_TEST=""
 ARG DESKTOP_TYPE=GNOME
 #ARG DESKTOP_TYPE=KDE
 #ARG DESKTOP_TYPE=Xfce
 
 ADD ./install $INST_SCRIPTS
-#如果下载比较慢，可以将下面两个包提前下载到当前目录下
-COPY ./idea-2023.2.1.tar ./chrome.rpm /tmp/
 
 WORKDIR $HOME
 RUN mkdir -p $HOME/Desktop
-
-# 华为镜像源
-#RUN set -xeu && \
-#    mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.bak && \
-#    #wget -O /etc/yum.repos.d/CentOS-Base.repo https://repo.huaweicloud.com/repository/conf/CentOS-7-reg.repo && \
-#    mv $INST_SCRIPTS/CentOS-7-reg.repo /etc/yum.repos.d/CentOS-Base.repo && \
-#    chmod 644  /etc/yum.repos.d/CentOS-Base.repo && \
-#    yum install -y epel-release && \
-#    yum clean all && yum -y -q update && yum makecache
 
 # 清华镜像源
 RUN set -xeu && \
@@ -74,6 +84,16 @@ RUN bash $INST_SCRIPTS/install_sublime_text.sh
 ## Cleanup job
 RUN bash $INST_SCRIPTS/centos-setup.sh
 RUN bash $INST_SCRIPTS/centos-cleanup.sh && rm -rf $INST_SCRIPTS
+
+
+### Upgrade git
+COPY --from=buildGit /opt/rh /opt/rh
+COPY --from=buildGit /usr/local/git /usr/local/git
+RUN set -xeu && \
+    ln -sf /opt/rh/devtoolset-9/root/bin/gcc /usr/bin/gcc && \
+    ln -sf /opt/rh/devtoolset-9/root/bin/g++ /usr/bin/g++ && \
+    ln -sf /opt/rh/devtoolset-9/root/bin/sudo /usr/bin/sudo && \
+    ln -sf /usr/local/git/bin/git /usr/bin/git
 
 
 EXPOSE 22

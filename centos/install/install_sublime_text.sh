@@ -8,12 +8,22 @@ if [ "$ARCH" == "arm64" ] ; then
 fi
 
 # XFCE时安装Sublime Text
+isInstall=$INSTALL_SUBLIME_TEST
 if [ "Xfce" == "$DESKTOP_TYPE" ]; then
+  if [ -z "$isInstall" ]; then
+    isInstall="true"
+  fi
+else
+  if [ -z "$isInstall" ]; then
+    isInstall="false"
+  fi
+fi
+
+if [ "true" = "$isInstall" ]; then
   echo "Install Sublime Text"
-
   rpm -v --import https://download.sublimetext.com/sublimehq-rpm-pub.gpg
-  yum-config-manager --add-repo https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo
 
+  yum-config-manager --add-repo https://download.sublimetext.com/rpm/stable/x86_64/sublime-text.repo
   yum install -y sublime-text
 
   cp /usr/share/applications/sublime_text.desktop $HOME/Desktop/
