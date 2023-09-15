@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -xe
 
+if [ "false" = "$INSTALL_FIREFOX" ]; then
+  echo "The Firefox installation will be skipped!"
+  exit 0
+fi
+
 # Add icon
 if [ -f /dockerstartup/install/ubuntu/install/firefox/firefox.desktop ]; then
   mv /dockerstartup/install/ubuntu/install/firefox/firefox.desktop $HOME/Desktop/

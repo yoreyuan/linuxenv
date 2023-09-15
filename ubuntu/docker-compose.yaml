@@ -2,8 +2,10 @@ version: '1.0'
 
 services:
   linuxenv:
+    #image: linuxenv-gnome:latest
+    #image: linuxenv-xfce:latest
     image: linuxenv:latest
-    container_name: linuxenv
+    container_name: linuxenv-ubuntu
     hostname: linuxenv
     user: root
     privileged: true
@@ -14,19 +16,15 @@ services:
     ports:
       - '3022:22'
       - '3388:3389'
-    #command: '/usr/bin/bash /etc/rc2.d/S02myinit'
     shm_size: 512m
     volumes:
-      #- './bin/init.sh:/opt/init.sh'
       #Maven
       - /d/dev_yore/mvn_repository:/opt/repository
-      #- '/c/Users/admin/.m2/repository:/home/yore/.m2/repository'
       # code
-      #- '/c/Users/admin/Public:/home/yore/Public'
       - /d/dev_yore:/opt/dev_yore
     extra_hosts:
       - "node01:172.22.80.1"
 
 networks:
-  ubuntu_default:
+  linuxenv_default:
     driver: bridge

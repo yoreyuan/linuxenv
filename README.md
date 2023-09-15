@@ -10,6 +10,9 @@ Docker + RDP + 远程桌面连接方式，可以在Windows系统快速搭建一�
 
 开发环境中提供如下
 * Chrome
+* Git
+  - CentOS: 2.42.0
+  - Ubuntu: 2.34.1
 * IDEA
 * JDK 17
 * Maven 3
@@ -36,6 +39,11 @@ Docker + RDP + 远程桌面连接方式，可以在Windows系统快速搭建一�
 进入到centos目录下。
 
 ### 3.1.1 构建镜像
+为了加速构建，可以提前将如下包放到 `centos/install`
+* chrome.rpm
+* git.tar
+* idea-2023.2.1.tar
+
 #### 默认方式构建镜像
 Windows环境可以执行如下命令构建镜像：
 ```bash
@@ -57,10 +65,18 @@ docker build . -f Dockerfile -t linuxenv:centos7.9.2009 --build-arg "DESKTOP_TYP
 docker build . -f Dockerfile -t linuxenv:centos7.9.2009 --build-arg "DESKTOP_TYPE=GNOME"
 ```
 
-#### 构建GNOME桌面镜像
+#### 构建KDE桌面镜像
 ```bash
 docker build . -f Dockerfile -t linuxenv:centos7.9.2009 --build-arg "DESKTOP_TYPE=KDE"
 ```
+
+#### 其他可选构建参数
+* `--build-arg "INSTALL_CHROME=false"`: 不安装Chrome浏览器, 默认安装
+* `--build-arg "INSTALL_DOCKER=true"`: 安装Docker, 默认不安装
+* `--build-arg "INSTALL_IDEA=false"`: 不安装IDEA, 默认安装
+* `--build-arg "INSTALL_MAVEN=false"`: 不安装Maven, 默认安装
+* `--build-arg "INSTALL_SUBLIME_TEST=true"`: 安装 Sublime Test，XFCE4默认安装，其他桌面时默认不安装
+
 
 ### 3.1.2 启动容器
 使用docker-compose启动
@@ -93,6 +109,9 @@ ssh -p 3022 root@localhost
 
 
 ## 3.2 Ubuntu
+为了加速构建，可以提前将如下包放到 `ubuntu/install`
+* chrome.deb
+* idea-2023.2.1.tar
 
 Windows环境可以执行如下命令构建镜像：
 ```bash
@@ -103,6 +122,27 @@ Linux环境可以执行如下命令构建镜像：
 ```bash
 ./build.sh
 ```
+
+**其他可选构建参数**
+* `--build-arg "INSTALL_CHROME=false"`: 不安装Chrome浏览器, 默认安装
+* `--build-arg "INSTALL_CHROMIUM=true"`: 安装Chromium浏览器, 默认不安装
+* `--build-arg "INSTALL_DOCKER=true"`: 安装Docker, 默认不安装
+* `--build-arg "INSTALL_FIREFOX=true"`: 安装Firefox浏览器, 默认不安装
+* `--build-arg "INSTALL_IDEA=false"`: 不安装IDEA, 默认安装
+* `--build-arg "INSTALL_MAVEN=false"`: 不安装Maven, 默认安装
+* `--build-arg "INSTALL_SUBLIME_TXST=true"`: 安装 Sublime Text，XFCE4默认安装，其他桌面时默认不安装
+
+XFCE4中文
+```bash
+apt-get -y install locales xfonts-intl-chinese fonts-wqy-microhei
+# 根据提示选择中文即可
+dpkg-reconfigure locales
+```
+
+关于中文输入法，例如可以参考搜狗的
+* [安装指南](https://shurufa.sogou.com/linux/guide)
+* [下载](https://shurufa.sogou.com/?r=mac&t=pinyin)
+
 
 使用同 3.1 中的使用说明。
 

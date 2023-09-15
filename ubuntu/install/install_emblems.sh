@@ -15,7 +15,8 @@ mkdir -p /usr/share/icons/hicolor/scalable/emblems
 for icon in $icons; do
   URL=$(echo "${icon}" | awk -F'|' '{print $1}')
   NAME=$(echo "${icon}" | awk -F'|' '{print $2}')
-  curl -o /usr/share/icons/hicolor/scalable/emblems/${NAME}-emblem.svg -L "${URL}"
+  #curl -o /usr/share/icons/hicolor/scalable/emblems/${NAME}-emblem.svg -L "${URL}"
+  mv /dockerstartup/images/${NAME}-emblem.svg /usr/share/icons/hicolor/scalable/emblems/${NAME}-emblem.svg
   echo "[Icon Data]" >> /usr/share/icons/hicolor/scalable/emblems/${NAME}-emblem.icon
   echo "DisplayName=${NAME}-emblem" >> /usr/share/icons/hicolor/scalable/emblems/${NAME}-emblem.icon
 done

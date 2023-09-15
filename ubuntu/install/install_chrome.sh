@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -ex
 
+if [ "false" = "$INSTALL_CHROME" ]; then
+  echo "The Chrome installation will be skipped!"
+  exit 0
+fi
+
 CHROME_ARGS="--password-store=basic --no-sandbox --ignore-gpu-blocklist --user-data-dir --no-first-run --simulate-outdated-no-au='Tue, 31 Dec 2099 23:59:59 GMT'"
 CHROME_VERSION=$1
 
@@ -10,49 +15,20 @@ if [ "$ARCH" == "arm64" ] ; then
   exit 0
 fi
 
-if [[ "${DISTRO}" == @(centos|oracle8|rockylinux9|rockylinux8|oracle9|almalinux9|almalinux8) ]]; then
-  if [ ! -z "${CHROME_VERSION}" ]; then
-    wget https://dl.google.com/linux/chrome/rpm/stable/x86_64/google-chrome-stable-${CHROME_VERSION}.x86_64.rpm -O chrome.rpm
-  else
-    wget https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm -O chrome.rpm
-  fi
-  if [[ "${DISTRO}" == @(oracle8|rockylinux9|rockylinux8|oracle9|almalinux9|almalinux8) ]]; then
-    dnf localinstall -y chrome.rpm
-    if [ -z ${SKIP_CLEAN+x} ]; then
-      dnf clean all
-    fi
-  else
-    yum localinstall -y chrome.rpm
-    if [ -z ${SKIP_CLEAN+x} ]; then
-      yum clean all
-    fi
-  fi
-  rm chrome.rpm
-elif [ "${DISTRO}" == "opensuse" ]; then
-  zypper ar http://dl.google.com/linux/chrome/rpm/stable/x86_64 Google-Chrome
-  wget https://dl.google.com/linux/linux_signing_key.pub
-  rpm --import linux_signing_key.pub
-  rm linux_signing_key.pub
-  zypper install -yn google-chrome-stable
-  if [ -z ${SKIP_CLEAN+x} ]; then
-    zypper clean --all
-  fi
-else
-  apt-get update
-  chromeDebPath="/tmp/chrome.deb"
-  if [ ! -e "$chromeDebPath" ]; then
-    if [ ! -z "${CHROME_VERSION}" ]; then
-      wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb -O $chromeDebPath
-    else
-      wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -O $chromeDebPath
-    fi
-  fi
+echo "Start installing Chrome!"
 
-  apt-get install -y $chromeDebPath
-  rm $chromeDebPath
-  if [ -z ${SKIP_CLEAN+x} ]; then
-    apt-get autoclean
+chromeDebPath="$INST_SCRIPTS/chrome.deb"
+if [ ! -e "$chromeDebPath" ]; then
+  if [ ! -z "${CHROME_VERSION}" ]; then
+    wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_${CHROME_VERSION}_amd64.deb -O $chromeDebPath
+  else
+    wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -O $chromeDebPath
   fi
+fi
+
+apt-get install -y $chromeDebPath
+if [ -z ${SKIP_CLEAN+x} ]; then
+  apt-get autoclean
 fi
 
 sed -i 's/-stable//g' /usr/share/applications/google-chrome.desktop

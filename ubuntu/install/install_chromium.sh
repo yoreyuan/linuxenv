@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -ex
 
+if [ "false" = "$INSTALL_CHROMIUM" ]; then
+  echo "The Chromium installation will be skipped!"
+  exit 0
+fi
+
 CHROME_ARGS="--password-store=basic --no-sandbox  --ignore-gpu-blocklist --user-data-dir --no-first-run --simulate-outdated-no-au='Tue, 31 Dec 2099 23:59:59 GMT'"
 ARCH=$(arch | sed 's/aarch64/arm64/g' | sed 's/x86_64/amd64/g')
 
