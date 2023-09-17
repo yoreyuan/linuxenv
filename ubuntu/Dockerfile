@@ -20,6 +20,7 @@ ARG INSTALL_FIREFOX="false"
 ARG INSTALL_IDEA="true"
 ARG INSTALL_MAVEN="true"
 ARG INSTALL_SUBLIME_TEXT=""
+ARG INSTALL_VS_CODE="false"
 ARG DESKTOP_TYPE=GNOME
 #ARG DESKTOP_TYPE=Xfce
 
@@ -44,6 +45,9 @@ RUN set -xeu && \
 ### Install common tools
 RUN DEBIAN_FRONTEND=$DEBIAN_FRONTEND bash $INST_SCRIPTS/install_tools.sh
 
+### Install Desktop
+RUN DEBIAN_FRONTEND=$DEBIAN_FRONTEND bash $INST_SCRIPTS/install_desktop.sh
+
 ### Install openssh server
 RUN bash $INST_SCRIPTS/install_sshd.sh
 
@@ -52,9 +56,6 @@ RUN bash $INST_SCRIPTS/install_custom_fonts.sh
 
 ### Install JDK
 RUN bash $INST_SCRIPTS/install_jdk.sh
-
-### Install Desktop
-RUN DEBIAN_FRONTEND=$DEBIAN_FRONTEND bash $INST_SCRIPTS/install_desktop.sh
 
 ### Custom Folder Emblems
 RUN bash $INST_SCRIPTS/install_emblems.sh
@@ -73,6 +74,9 @@ RUN bash $INST_SCRIPTS/install_sublime_text.sh
 
 ### Install IDEA
 RUN bash $INST_SCRIPTS/install_idea.sh
+
+### Install VS Code
+RUN bash $INST_SCRIPTS/install_vs_code.sh
 
 ### Cleanup job
 RUN bash $INST_SCRIPTS/ubuntu-cleanup.sh && rm -rf $INST_SCRIPTS

@@ -224,3 +224,8 @@ Exec=/dockerstartup/trustdesktop.sh
 EOL
 chmod +x /etc/xdg/autostart/desktop-icons.desktop
 
+
+#### Okular pdf阅读器
+apt-get install -y okular
+#apt-get install -y kde-l10n-zhcn
+

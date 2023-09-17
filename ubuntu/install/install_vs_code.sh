@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -ex
 
+if [ "false" = "$INSTALL_VS_CODE" ]; then
+  echo "The VS Code installation will be skipped!"
+  exit 0
+fi
+
 ARCH=$(arch | sed 's/aarch64/arm64/g' | sed 's/x86_64/x64/g')
 wget -q https://update.code.visualstudio.com/latest/linux-deb-${ARCH}/stable -O vs_code.deb
 apt-get update
